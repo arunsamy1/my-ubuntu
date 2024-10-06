@@ -1,1 +1,2 @@
 textprivate.txt
+second line
