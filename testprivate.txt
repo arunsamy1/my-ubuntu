@@ -1,3 +1,4 @@
 textprivate.txt
 second line
 third line
+fourth line
