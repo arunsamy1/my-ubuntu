@@ -1,0 +1,39 @@
+---
+- name: Encrypt tar.gz files using OpenSSL
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    input_folder: "/backUP/input"
+    output_folder: "/backUP/output"
+    password_file: "/backUP/password.txt"
+
+  tasks:
+    - name: Ensure output folder exists
+      file:
+        path: "{{ output_folder }}"
+        state: directory
+
+    - name: Find all tar.gz files in the input folder
+      find:
+        paths: "{{ input_folder }}"
+        patterns: "*.tar.gz"
+      register: tar_files
+
+    - name: Encrypt each tar.gz file
+      loop: "{{ tar_files.files }}"
+      vars:
+        input_file: "{{ item.path }}"
+        output_file: "{{ output_folder }}/{{ item.path | basename | regex_replace('\\.tar\\.gz$', '_enc.tar.gz') }}"
+      command: >
+        openssl enc -aes-256-cbc -salt -iter 10000 -pbkdf2
+        -pass file:{{ password_file }}
+        -in {{ input_file }}
+        -out {{ output_file }}
+      register: encryption_results
+      ignore_errors: yes
+
+    - name: Report encryption results
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ encryption_results.results | map(attribute='stderr') | list }}"

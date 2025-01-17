@@ -1,0 +1,78 @@
+---
+- hosts: localhost
+  vars:
+    backup_source_dirs:
+      - /docuserver/docusaurus/my-website_PROD_SUCCESS/docs # not used
+      - /docuserver/docusaurus/my-website_PROD_TECH/docs # not used
+    backup_destination_dir: "/backUP/input/"
+    backup_suffix_date: "{{ ansible_date_time.date }}"
+    backup_suffix: "{{ ansible_date_time.date }}_{{ ansible_date_time.time | regex_replace(':', '-') }}"
+  tasks:
+  - name: create a temp directory to store the files
+    ansible.builtin.file:
+      path: "{{ backup_destination_dir }}/{{ ansible_date_time.date }}"
+      state: directory
+  - name: backup of local folder success docs
+    community.general.archive:
+       path: /docuserver/docusaurus/my-website_PROD_SUCCESS/docs
+       dest: "{{ backup_destination_dir }}/{{ ansible_date_time.date }}/{{ backup_suffix }}_successnotes.lab247.eth_docs.tar.gz"
+       format: gz
+  - name: backup of local folder success build
+    community.general.archive:
+       path: /docuserver/docusaurus/my-website_PROD_SUCCESS/build
+       dest: "{{ backup_destination_dir }}/{{ ansible_date_time.date }}/{{ backup_suffix }}_successnotes.lab247.eth_build.tar.gz"
+       format: gz
+  - name: backup of local folder technotes docs
+    community.general.archive:
+       path: /docuserver/docusaurus/my-website_PROD_TECH/docs
+       dest: "{{ backup_destination_dir }}/{{ ansible_date_time.date }}/{{ backup_suffix }}_technotes.lab247.eth_docs.tar.gz"
+       format: gz
+  - name: backup of local folder technotes build
+    community.general.archive:
+       path: /docuserver/docusaurus/my-website_PROD_TECH/build
+       dest: "{{ backup_destination_dir }}/{{ ansible_date_time.date }}/{{ backup_suffix }}_technotes.lab247.eth_build.tar.gz"
+       format: gz
+  - name: backup of local folder uatsingletab build
+    community.general.archive:
+       path: /docuserver/docusaurus/my-website_UAT_SINGLE_TAB/build
+       dest: "{{ backup_destination_dir }}/{{ ansible_date_time.date }}/{{ backup_suffix }}_uatsingletab.lab247.eth_build.tar.gz"
+       format: gz
+  - name: backup of local folder uatsingletab docs
+    community.general.archive:
+       path: /docuserver/docusaurus/my-website_UAT_SINGLE_TAB/docs
+       dest: "{{ backup_destination_dir }}/{{ ansible_date_time.date }}/{{ backup_suffix }}_uatsingletab.lab247.eth_docs.tar.gz"
+       format: gz
+  - name: backup of local folder devnotes build
+    community.general.archive:
+       path: /docuserver/docusaurus/my-website_DEV/build
+       dest: "{{ backup_destination_dir }}/{{ ansible_date_time.date }}/{{ backup_suffix }}_devnotes.lab247.eth_build.tar.gz"
+       format: gz
+  - name: backup of local folder devnotes docs
+    community.general.archive:
+       path: /docuserver/docusaurus/my-website_UAT_SINGLE_TAB/docs
+       dest: "{{ backup_destination_dir }}/{{ ansible_date_time.date }}/{{ backup_suffix }}_devnotes.lab247.eth_docs.tar.gz"
+       format: gz
+  - name: backup of code folder
+    community.general.archive:
+       path: /code
+       dest: "{{ backup_destination_dir }}/{{ ansible_date_time.date }}/{{ backup_suffix }}_Code.tar.gz"
+       format: gz
+  - name: backup of web contents folder
+    community.general.archive:
+       path: /web/www
+       dest: "{{ backup_destination_dir }}/{{ ansible_date_time.date }}/{{ backup_suffix }}_webwww.tar.gz"
+       format: gz
+  - name: backup of local ZIMNOTES
+    community.general.archive:
+       path: /home/arun/ZIM_NOTES
+       dest: "{{ backup_destination_dir }}/{{ ansible_date_time.date }}/{{ backup_suffix }}_ZIMNOTES.tar.gz"
+       format: gz
+  - name: backup of parent folder
+    community.general.archive:
+       path: /backUP/input/{{ ansible_date_time.date }}
+       dest: "{{ backup_destination_dir }}/{{ backup_suffix }}_ChromeOS_my-notes_backUP.tar.gz"
+       format: gz
+  - name: delete the directory
+    ansible.builtin.file:
+      path: "{{ backup_destination_dir }}/{{ ansible_date_time.date }}"
+      state: absent
