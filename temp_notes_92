@@ -1,0 +1,80 @@
+mount -o loop /RHEL9.iso /mnt
+vi /etc/fstab
+/RHEL9.iso /mnt iso9660 loop 0 0
+cp /mnt/media.repo /etc/yum.repos.d/rhel9.repo
+chmod 644 /etc/yum.repos.d/rhel9.repo
+
+vi /etc/yum.repos.d/rhel9.repo
+
+[InstallMeida-BaseOS]
+name=RHEL9 - BaseOS
+metadata_expire=-1
+gpgcheck=0
+enabled=1
+baseurl=file:///mnt/BaseOS/
+
+[InstallMeida-AppStream]
+name=RHEL9 - Appstream
+metadata_expire=-1
+gpgcheck=0
+enabled=1
+baseurl=file:///mnt/AppStream/
+
+dnf clean all
+subscription-manager clean
+dnf repolist
+
+----
+
+nmcli connection add con-name myprofile1 ifname enp0s3 type ethernet
+nmcli connection modify myprofile1 ipv4.address 192.168.1.2/24 ipv6.address fd01:92 /64
+
+nmcli connection up myprofile1
+nmcli connection show --active
+nmcli -p con show myprofile1
+
+
+----
+timedatectl list-timezones
+timedatectl 
+timedatectl list-timezones | grep -o "America/New_*"
+timedatectl set-timezones "America/New_York"
+
+timedatectl
+
+sudo systemctl restart timedatectl 		// if required.
+
+sudo timedatectl set-local-rtc 0		// this sets hardware clock to UTC.
+
+---
+
+timedatectl
+sudo dnf install chrony -y
+sudo systemctl enable --now chronyd
+sudo systemctl status chronyd
+sudo timedatectl set-ntp true	// activate NTP synchronization
+
+vi /etc/chrony.conf
+timedatectl
+vi /etc/chrony.conf
+
+server <NTP ServerName> iburst
+
+chronyc sources
+chronyc clients
+
+----
+
+mkdir /find/mp3files/
+
+find /etc -size +3M -exec cp /find/mp3files/\;
+
+find /etc -size +3M -exec cp -i /find/mp3files/\;
+
+find /etc -maxdepth 1 -size +3M -exec cp -i /find/mp3files/\;
+
+
+
+
+
+
